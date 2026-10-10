@@ -10,7 +10,7 @@ from contextlib import contextmanager
 from ._version import get_version
 
 # ─────────────────────────────────────────────────────────────────────────────
-# COLOR PALETTE — Sakura Dusk Edition 🌸
+# COLOR PALETTE — Tokyo Night Edition 🌊
 # ─────────────────────────────────────────────────────────────────────────────
 RESET = "\033[0m"
 BOLD = "\033[1m"
@@ -26,21 +26,21 @@ _SUPPORTS_256 = (
 def _c(code256: str, fallback: str) -> str:
     return code256 if _SUPPORTS_256 else fallback
 
-# ── Sakura Dusk palette ──
-COMMENT     = _c("\033[38;5;182m",  "\033[95m")     # dusty pink — # section
-VARIABLE    = _c("\033[38;5;116m",  "\033[96m")     # dusty cyan — labels
-STRING      = _c("\033[38;5;223m",  "\033[97m")     # cream — string values
-KEYWORD     = _c("\033[38;5;211m",  "\033[95m")     # soft coral — accent
-BOOLEAN     = _c("\033[38;5;222m",  "\033[93m")     # soft gold
-SUCCESS     = _c("\033[38;5;151m",  "\033[92m")     # soft mint
-WARNING     = _c("\033[38;5;222m",  "\033[93m")     # soft gold
-ERROR       = _c("\033[38;5;210m",  "\033[91m")     # soft rose
+# ── Tokyo Night palette ──
+COMMENT     = _c("\033[38;5;103m",  "\033[94m")     # slate blue — # section
+VARIABLE    = _c("\033[38;5;111m",  "\033[96m")     # electric blue — labels
+STRING      = _c("\033[38;5;151m",  "\033[92m")     # mint green — string values
+KEYWORD     = _c("\033[38;5;176m",  "\033[95m")     # lavender — accent
+BOOLEAN     = _c("\033[38;5;222m",  "\033[93m")     # amber
+SUCCESS     = _c("\033[38;5;151m",  "\033[92m")     # mint
+WARNING     = _c("\033[38;5;222m",  "\033[93m")     # amber
+ERROR       = _c("\033[38;5;204m",  "\033[91m")     # rose red
 
 # ── Structure ──
-BORDER      = _c("\033[38;5;239m",  "\033[90m")     # dark warm gray — borders
+BORDER      = _c("\033[38;5;60m",   "\033[90m")     # deep indigo — borders
 OPERATOR    = _c("\033[38;5;245m",  "\033[37m")     # mid gray — operators
-DIM_TEXT    = _c("\033[38;5;242m",  "\033[90m")     # warm gray — dim text
-STATUS_BAR  = _c("\033[38;5;238m",  "\033[90m")     # darkest warm — status bar
+DIM_TEXT    = _c("\033[38;5;240m",  "\033[90m")     # slate gray — dim text
+STATUS_BAR  = _c("\033[38;5;60m",   "\033[90m")     # deep indigo — status bar
 
 # ── Legacy aliases (for backwards compat with banner) ──
 LINENO = BORDER
@@ -126,7 +126,7 @@ def _rule(width: int, char: str = "─") -> str:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# BANNER — Sakura Dusk with accent
+# BANNER — Tokyo Night with accent
 # ─────────────────────────────────────────────────────────────────────────────
 def banner(version: str) -> None:
     """Render the console identity/header and remember it for screen redraws."""
@@ -138,9 +138,9 @@ def banner(version: str) -> None:
     subtitle = f"v{version.lstrip('v')}  •  光  •  OFFLINE-FIRST  •  LOCAL + OPTIONAL GIT"
 
     if width < 68:
-        # Compact mode with accent — Sakura Dusk
+        # Compact mode with Tokyo Night accent
         print(
-            color("HIKARI", BOLD + KEYWORD)
+            color("HIKARI", BOLD + VARIABLE)
             + color(" /.LAB", COMMENT)
             + color(" // ", DIM_TEXT)
             + color("LOCAL WORKSPACE", BOLD + STRING)
@@ -153,7 +153,7 @@ def banner(version: str) -> None:
         print(color("╔" + "═" * inner + "╗", BORDER))
         print(
             color("║", BORDER)
-            + color("  " + title, BOLD + KEYWORD)
+            + color("  " + title, BOLD + VARIABLE)
             + " " * max(0, inner - len(title) - 2)
             + color("║", BORDER)
         )
@@ -301,13 +301,13 @@ def menu(
                 wt_color = WARNING
             emit_field("working_tree", wt, wt_color)
 
-            # changes → dim (biar tidak tabrakan dengan DIRTY)
+            # changes → dim
             changes_display = _simplify_changes(
                 snapshot.get("changes", "not inspected")
             )
             emit_field("changes", changes_display, DIM_TEXT)
 
-            # sync → dim (info, bukan warning)
+            # sync → dim
             sync = snapshot.get("sync", "not checked")
             emit_field("sync", sync, DIM_TEXT)
 
@@ -358,7 +358,7 @@ def menu(
 
         # ── EXIT ─────────────────────────────────────────────────────────
         emit_raw("")
-        emit(f"  {color(SEP, OPERATOR)} {color('0', VARIABLE)}  {color('EXIT HIKARI', WARNING)}")
+        emit(f"  {color(SEP, OPERATOR)} {color('0', VARIABLE)}  {color('EXIT HIKARI', ERROR)}")
 
         # ── STATUS BAR ───────────────────────────────────────────────────
         print(color(rule, BORDER))
