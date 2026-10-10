@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title desc">
+  <title id="title">PERNAH Continuity P</title>
+  <desc id="desc">Geometric P symbol representing a memory node and continuous path.</desc>
+  <g fill="none" stroke="#176B1D" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M19 79V30C19 17.85 28.85 8 41 8h15c12.7 0 23 10.3 23 23S68.7 54 56 54H35"/>
+    <path d="M35 54c10 0 17-6 17-16"/>
+  </g>
+  <circle cx="35" cy="30" r="6" fill="#176B1D"/>
+  <circle cx="35" cy="54" r="6" fill="#176B1D"/>
+</svg>

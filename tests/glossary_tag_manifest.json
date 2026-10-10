@@ -1,0 +1,659 @@
+[
+  [
+    "Creation Chronicle",
+    [
+      "Documentation"
+    ]
+  ],
+  [
+    "Universal Knowledge Dictionary",
+    [
+      "Meta",
+      "Glossary"
+    ]
+  ],
+  [
+    "Aurora",
+    [
+      "Science",
+      "Nature"
+    ]
+  ],
+  [
+    "Gmail Dot Trick",
+    [
+      "Internet",
+      "Email"
+    ]
+  ],
+  [
+    "ISO",
+    [
+      "Standards",
+      "Photography"
+    ]
+  ],
+  [
+    "Meme",
+    [
+      "Internet",
+      "Culture"
+    ]
+  ],
+  [
+    "Polaroid",
+    [
+      "Photography"
+    ]
+  ],
+  [
+    "Broader Temporal Query",
+    [
+      "PERNAH",
+      "Retrieval"
+    ]
+  ],
+  [
+    "Temporal Window",
+    [
+      "Time",
+      "Retrieval"
+    ]
+  ],
+  [
+    "AI Inference",
+    [
+      "AI"
+    ]
+  ],
+  [
+    "Artifact",
+    [
+      "Release"
+    ]
+  ],
+  [
+    "Backup",
+    [
+      "Storage"
+    ]
+  ],
+  [
+    "Canonical Data",
+    [
+      "Storage"
+    ]
+  ],
+  [
+    "Canonical Export",
+    [
+      "Storage"
+    ]
+  ],
+  [
+    "Commitment",
+    [
+      "Memory"
+    ]
+  ],
+  [
+    "Confidence",
+    [
+      "Memory"
+    ]
+  ],
+  [
+    "Data Export",
+    [
+      "Storage"
+    ]
+  ],
+  [
+    "Data Import",
+    [
+      "Storage"
+    ]
+  ],
+  [
+    "Data Integrity",
+    [
+      "Engineering"
+    ]
+  ],
+  [
+    "Decision Memory",
+    [
+      "Memory"
+    ]
+  ],
+  [
+    "Deduplication",
+    [
+      "Storage"
+    ]
+  ],
+  [
+    "Derived Data",
+    [
+      "Storage"
+    ]
+  ],
+  [
+    "Deterministic Retrieval",
+    [
+      "Retrieval"
+    ]
+  ],
+  [
+    "Dictionary View",
+    [
+      "UI"
+    ]
+  ],
+  [
+    "Entity",
+    [
+      "Memory"
+    ]
+  ],
+  [
+    "Event",
+    [
+      "Memory"
+    ]
+  ],
+  [
+    "Event-Entity Link",
+    [
+      "Memory"
+    ]
+  ],
+  [
+    "External Memory",
+    [
+      "Product"
+    ]
+  ],
+  [
+    "Historical Record",
+    [
+      "Memory"
+    ]
+  ],
+  [
+    "Immutable Artifact",
+    [
+      "Release"
+    ]
+  ],
+  [
+    "Ingestion",
+    [
+      "Memory"
+    ]
+  ],
+  [
+    "Ingestion Orchestration",
+    [
+      "Memory"
+    ]
+  ],
+  [
+    "Intent",
+    [
+      "Memory"
+    ]
+  ],
+  [
+    "Language Detection",
+    [
+      "Input"
+    ]
+  ],
+  [
+    "Local-first",
+    [
+      "Architecture"
+    ]
+  ],
+  [
+    "Location Memory",
+    [
+      "Memory"
+    ]
+  ],
+  [
+    "Memory Draft",
+    [
+      "Memory"
+    ]
+  ],
+  [
+    "Memory Engine",
+    [
+      "Architecture"
+    ]
+  ],
+  [
+    "Memory Record",
+    [
+      "Memory"
+    ]
+  ],
+  [
+    "MemoryDraft",
+    [
+      "Memory"
+    ]
+  ],
+  [
+    "Migration",
+    [
+      "Storage"
+    ]
+  ],
+  [
+    "Multi-language",
+    [
+      "Input"
+    ]
+  ],
+  [
+    "Normalization",
+    [
+      "Engineering"
+    ]
+  ],
+  [
+    "Original Text",
+    [
+      "Memory"
+    ]
+  ],
+  [
+    "PERNAH",
+    [
+      "Product"
+    ]
+  ],
+  [
+    "Persistence",
+    [
+      "Storage"
+    ]
+  ],
+  [
+    "Physical Object",
+    [
+      "Memory"
+    ]
+  ],
+  [
+    "Pre-release",
+    [
+      "Release"
+    ]
+  ],
+  [
+    "Precedence",
+    [
+      "Governance"
+    ]
+  ],
+  [
+    "Project Version",
+    [
+      "Release"
+    ]
+  ],
+  [
+    "Provider-Neutral",
+    [
+      "Architecture"
+    ]
+  ],
+  [
+    "Rebuildable",
+    [
+      "Storage"
+    ]
+  ],
+  [
+    "Recall",
+    [
+      "Retrieval"
+    ]
+  ],
+  [
+    "Relationship",
+    [
+      "Memory"
+    ]
+  ],
+  [
+    "Retrieval",
+    [
+      "Retrieval"
+    ]
+  ],
+  [
+    "Schema Migration",
+    [
+      "Storage"
+    ]
+  ],
+  [
+    "Schema Version",
+    [
+      "Storage"
+    ]
+  ],
+  [
+    "Semantic Search",
+    [
+      "Retrieval"
+    ]
+  ],
+  [
+    "Semantic Version",
+    [
+      "Release"
+    ]
+  ],
+  [
+    "Source / Provenance",
+    [
+      "Memory"
+    ]
+  ],
+  [
+    "Source of Truth",
+    [
+      "Governance"
+    ]
+  ],
+  [
+    "SQLite",
+    [
+      "Storage"
+    ]
+  ],
+  [
+    "Temporal Expression",
+    [
+      "Input"
+    ]
+  ],
+  [
+    "Temporal History",
+    [
+      "Memory"
+    ]
+  ],
+  [
+    "Temporal Query",
+    [
+      "Retrieval"
+    ]
+  ],
+  [
+    "Transaction",
+    [
+      "Finance"
+    ]
+  ],
+  [
+    "UTC ISO 8601",
+    [
+      "Storage"
+    ]
+  ],
+  [
+    "UUID4",
+    [
+      "Storage"
+    ]
+  ],
+  [
+    "Versioned Schema",
+    [
+      "Storage"
+    ]
+  ],
+  [
+    "WhatsApp Interface",
+    [
+      "Input"
+    ]
+  ],
+  [
+    "Networking",
+    [
+      "Networking"
+    ]
+  ],
+  [
+    "DNS",
+    [
+      "Networking"
+    ]
+  ],
+  [
+    "Domain Resolution",
+    [
+      "Networking"
+    ]
+  ],
+  [
+    "IP Address",
+    [
+      "Networking"
+    ]
+  ],
+  [
+    "SNI",
+    [
+      "Networking"
+    ]
+  ],
+  [
+    "TLS",
+    [
+      "Networking"
+    ]
+  ],
+  [
+    "HTTP Probe",
+    [
+      "Networking"
+    ]
+  ],
+  [
+    "CDN",
+    [
+      "Networking"
+    ]
+  ],
+  [
+    "CloudFront",
+    [
+      "Networking"
+    ]
+  ],
+  [
+    "Subdomain",
+    [
+      "Networking"
+    ]
+  ],
+  [
+    "ASN",
+    [
+      "Networking"
+    ]
+  ],
+  [
+    "Shared Infrastructure",
+    [
+      "Networking"
+    ]
+  ],
+  [
+    "Infrastructure Mapping",
+    [
+      "Networking"
+    ]
+  ],
+  [
+    "Exact Search",
+    [
+      "Retrieval"
+    ]
+  ],
+  [
+    "Deterministic Ranking",
+    [
+      "Retrieval"
+    ]
+  ],
+  [
+    "Generated UI Duplication Guard",
+    [
+      "Governance"
+    ]
+  ],
+  [
+    "Continuity Layer",
+    [
+      "Architecture",
+      "Governance"
+    ]
+  ],
+  [
+    "Ephemeral",
+    [
+      "Concepts",
+      "Computing"
+    ]
+  ],
+  [
+    "Boot Snapshot",
+    [
+      "Architecture",
+      "Governance"
+    ]
+  ],
+  [
+    "Release Manifest",
+    [
+      "Architecture",
+      "Governance"
+    ]
+  ],
+  [
+    "TF-IDF",
+    [
+      "Retrieval"
+    ]
+  ],
+  [
+    "Concept Normalization",
+    [
+      "Retrieval"
+    ]
+  ],
+  [
+    "Semantic Retrieval",
+    [
+      "Retrieval"
+    ]
+  ],
+  [
+    "Ephemeral",
+    [
+      "Concepts",
+      "Workflow"
+    ]
+  ],
+  [
+    "Continuity Layer",
+    [
+      "Architecture",
+      "Governance"
+    ]
+  ],
+  [
+    "Boot Snapshot",
+    [
+      "Architecture",
+      "Governance"
+    ]
+  ],
+  [
+    "Release Manifest",
+    [
+      "Architecture",
+      "Governance"
+    ]
+  ],
+  [
+    "Source of Truth",
+    [
+      "Governance"
+    ]
+  ],
+  [
+    "Derived Data",
+    [
+      "Storage"
+    ]
+  ],
+  [
+    "Canonical Data",
+    [
+      "Storage"
+    ]
+  ],
+  [
+    "Co-Developer",
+    [
+      "Collaboration"
+    ]
+  ],
+  [
+    "Artifact Compliance Gate",
+    [
+      "Governance"
+    ]
+  ],
+  [
+    "Test Discovery Contract",
+    [
+      "Testing"
+    ]
+  ],
+  [
+    "Data Classification",
+    [
+      "Security"
+    ]
+  ],
+  [
+    "Secret Data",
+    [
+      "Security"
+    ]
+  ],
+  [
+    "Prompt Translation",
+    [
+      "Governance"
+    ]
+  ],
+  [
+    "Knowledge-Surface Impact Check",
+    [
+      "Governance"
+    ]
+  ]
+]

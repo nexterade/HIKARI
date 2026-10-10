@@ -1,0 +1,24 @@
+{
+  "project": "hikari-lab",
+  "display_name": "HIKARI/.LAB",
+  "version": "0.6.8",
+  "status": "12-operation dashboard; outcome-accurate action history and editable persistent release-note drafts",
+  "milestone": "Hybrid dashboard and full operations",
+  "runtime": "Python 3.10+",
+  "canonical_test": "python3 -m unittest discover -s tests -v",
+  "source_of_truth": [
+    "target project files and Git state",
+    "GitHub remote when configured",
+    "docs/CHECKPOINT.md",
+    "docs/STATE.md",
+    "docs/BACKLOG.md",
+    "docs/ARCHITECTURE.md",
+    "docs/CHANGELOG.md"
+  ],
+  "next_gate": "Canonical unittest suite and exact ZIP Artifact Compliance Gate; authenticated GitHub smoke test requires gh and credentials.",
+  "continuity_layer": {
+    "chat_is_ephemeral": true,
+    "artifact_is_continuous": true
+  },
+  "state": "v0.6.8 interactive release-note preview/edit/load/save with per-project/per-version drafts stored outside target repository"
+}
