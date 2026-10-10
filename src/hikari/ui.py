@@ -6,31 +6,79 @@ import shutil
 import sys
 import threading
 import textwrap
-import time
 from contextlib import contextmanager
 from ._version import get_version
 
+# ─────────────────────────────────────────────────────────────────────────────
+# COLOR PALETTE — Sakura Dusk Edition 🌸
+# ─────────────────────────────────────────────────────────────────────────────
 RESET = "\033[0m"
 BOLD = "\033[1m"
+ITALIC = "\033[3m"
 DIM = "\033[2m"
-CYAN = "\033[96m"
-MAGENTA = "\033[95m"
-ICE_BLUE = "\033[96m"
-ARCTIC_DARK = "\033[38;5;24m"
-DEEP_TEAL = "\033[38;5;30m"
-BLUE = "\033[94m"
-GREEN = "\033[92m"
-YELLOW = "\033[93m"
-RED = "\033[91m"
-WHITE = "\033[97m"
-IDENTITY = "✦"
+
+_SUPPORTS_256 = (
+    os.environ.get("COLORTERM") in {"truecolor", "24bit"}
+    or "256" in os.environ.get("TERM", "")
+    or os.environ.get("TERM", "").startswith("xterm")
+)
+
+def _c(code256: str, fallback: str) -> str:
+    return code256 if _SUPPORTS_256 else fallback
+
+# ── Sakura Dusk palette ──
+COMMENT     = _c("\033[38;5;182m",  "\033[95m")     # dusty pink — # section
+VARIABLE    = _c("\033[38;5;116m",  "\033[96m")     # dusty cyan — labels
+STRING      = _c("\033[38;5;223m",  "\033[97m")     # cream — string values
+KEYWORD     = _c("\033[38;5;211m",  "\033[95m")     # soft coral — accent
+BOOLEAN     = _c("\033[38;5;222m",  "\033[93m")     # soft gold
+SUCCESS     = _c("\033[38;5;151m",  "\033[92m")     # soft mint
+WARNING     = _c("\033[38;5;222m",  "\033[93m")     # soft gold
+ERROR       = _c("\033[38;5;210m",  "\033[91m")     # soft rose
+
+# ── Structure ──
+BORDER      = _c("\033[38;5;239m",  "\033[90m")     # dark warm gray — borders
+OPERATOR    = _c("\033[38;5;245m",  "\033[37m")     # mid gray — operators
+DIM_TEXT    = _c("\033[38;5;242m",  "\033[90m")     # warm gray — dim text
+STATUS_BAR  = _c("\033[38;5;238m",  "\033[90m")     # darkest warm — status bar
+
+# ── Legacy aliases (for backwards compat with banner) ──
+LINENO = BORDER
+CYAN = VARIABLE
+MAGENTA = COMMENT
+DEEP_TEAL = BORDER
+SAKURA = KEYWORD
+SAKURA_BOLD = KEYWORD
+NEON_CYAN = VARIABLE
+NEON_MAGENTA = KEYWORD
+NEON_YELLOW = WARNING
+NEON_GREEN = SUCCESS
+NEON_RED = ERROR
+NEON_BLUE = KEYWORD
+GRAY_LIGHT = STRING
+GRAY_MID = OPERATOR
+GRAY_DARK = DIM_TEXT
+PURPLE_DARK = DIM_TEXT
+BLUE = VARIABLE
+GREEN = SUCCESS
+YELLOW = WARNING
+RED = ERROR
+WHITE = STRING
+WHITE_BOLD = STRING
+ICE_BLUE = VARIABLE
+ARCTIC_DARK = DIM_TEXT
+CYAN_SOFT = VARIABLE
+CYAN_BOLD = VARIABLE
+
+IDENTITY = "◈"
+SEP = "▸"
 _BANNER_VERSION = get_version()
 
 
-
-
+# ─────────────────────────────────────────────────────────────────────────────
+# TERMINAL HELPERS
+# ─────────────────────────────────────────────────────────────────────────────
 def shutil_terminal_width() -> int:
-    """Return a conservative terminal width for responsive mobile menus."""
     try:
         return max(24, shutil.get_terminal_size(fallback=(80, 24)).columns)
     except OSError:
@@ -38,38 +86,48 @@ def shutil_terminal_width() -> int:
 
 
 def clear_screen() -> None:
-    """Clear the interactive terminal screen when running on a TTY."""
     if not sys.stdout.isatty():
         return
-    # ANSI 2J clears the visible screen; 3J also clears terminal scrollback
-    # where supported, preventing the previous operation log from piling up.
     print("\033[3J\033[H\033[2J", end="", flush=True)
 
 
 def terminal_text(text: str) -> str:
-    """Compatibility helper; identity is now used contextually, not per line."""
     return text
 
 
 def color(text: str, code: str) -> str:
-    """Apply a semantic terminal color when the terminal supports color."""
     if os.environ.get("NO_COLOR") or os.environ.get("TERM") == "dumb" or not sys.stdout.isatty():
         return text
     return f"{code}{text}{RESET}"
 
 
 def accent(text: str) -> str:
-    return color(text, CYAN)
+    return color(text, KEYWORD)
 
 
 def muted(text: str) -> str:
-    return color(text, DIM)
+    return color(text, OPERATOR)
 
 
 def heading(text: str) -> str:
-    return color(text, BOLD + CYAN)
+    return color(text, COMMENT)
 
 
+def _strip_ansi(text: str) -> str:
+    return re.sub(r"\x1b\[[0-9;]*m", "", text)
+
+
+def _visible_len(text: str) -> int:
+    return len(_strip_ansi(text))
+
+
+def _rule(width: int, char: str = "─") -> str:
+    return char * max(12, width - 2)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# BANNER — Sakura Dusk with accent
+# ─────────────────────────────────────────────────────────────────────────────
 def banner(version: str) -> None:
     """Render the console identity/header and remember it for screen redraws."""
     global _BANNER_VERSION
@@ -78,41 +136,93 @@ def banner(version: str) -> None:
     width = shutil_terminal_width()
     title = "H I K A R I  / . L A B  //  LOCAL WORKSPACE"
     subtitle = f"v{version.lstrip('v')}  •  光  •  OFFLINE-FIRST  •  LOCAL + OPTIONAL GIT"
-    # Fixed-width box art breaks on mobile landscape/portrait when terminal
-    # column counts differ from the visible viewport. Use compact, unboxed
-    # identity on narrow terminals and a width-safe banner elsewhere.
+
     if width < 68:
-        print(color("HIKARI /.LAB // LOCAL WORKSPACE", BOLD + CYAN))
-        print(color(subtitle, DIM))
+        # Compact mode with accent — Sakura Dusk
+        print(
+            color("HIKARI", BOLD + KEYWORD)
+            + color(" /.LAB", COMMENT)
+            + color(" // ", DIM_TEXT)
+            + color("LOCAL WORKSPACE", BOLD + STRING)
+        )
+        print(color(subtitle, DIM_TEXT))
     else:
         inner = min(width - 2, 76)
         title = title[:inner - 2]
         subtitle = subtitle[:inner - 2]
-        print(color("╔" + "═" * inner + "╗", DEEP_TEAL))
-        print(color("║", DEEP_TEAL) + color("  " + title, BOLD + CYAN) + " " * max(0, inner - len(title) - 2) + color("║", DEEP_TEAL))
-        print(color("║", MAGENTA) + color("  " + subtitle, DIM) + " " * max(0, inner - len(subtitle) - 2) + color("║", DEEP_TEAL))
-        print(color("╚" + "═" * inner + "╝", DEEP_TEAL))
+        print(color("╔" + "═" * inner + "╗", BORDER))
+        print(
+            color("║", BORDER)
+            + color("  " + title, BOLD + KEYWORD)
+            + " " * max(0, inner - len(title) - 2)
+            + color("║", BORDER)
+        )
+        print(
+            color("║", COMMENT)
+            + color("  " + subtitle, DIM_TEXT)
+            + " " * max(0, inner - len(subtitle) - 2)
+            + color("║", BORDER)
+        )
+        print(color("╚" + "═" * inner + "╝", BORDER))
 
 
-def target(repo_name: str, root: str, branch: str, remote: str, version: str | None = None, version_source: str | None = None) -> None:
-    """Render the current project target without duplicating the main banner."""
-    print(color("┌─ TARGET", BLUE) + color("────────────────────────────────────────────────────", DIM))
-    project_value = repo_name + (f"  {version}" if version else "")
-    print(f"  {color('PROJECT', CYAN):<22} {project_value}")
-    print(f"  {color('PATH', CYAN):<22} {root}")
-    print(f"  {color('BRANCH', CYAN):<22} {branch}")
-    print(f"  {color('REMOTE', CYAN):<22} {remote or '(none)'}")
+# ─────────────────────────────────────────────────────────────────────────────
+# TARGET PROJECT PANEL
+# ─────────────────────────────────────────────────────────────────────────────
+def target(
+    repo_name: str,
+    root: str,
+    branch: str,
+    remote: str,
+    version: str | None = None,
+    version_source: str | None = None,
+) -> None:
+    width = max(24, min(shutil_terminal_width(), 88))
+    rule = _rule(width, "─")
+
+    print(color(rule, BORDER))
+    print(color("  # TARGET PROJECT", COMMENT))
+    print(color(rule, BORDER))
+
+    def field(label: str, value: str, value_color: str = STRING) -> None:
+        pad = " " * max(1, 14 - len(label))
+        print(
+            f"  {color(label, VARIABLE)}{pad} "
+            f"{color(':', OPERATOR)}  "
+            f"{color(f'\"{value}\"', value_color)}"
+        )
+
+    field("project", repo_name + (f" v{version}" if version else ""))
+    field("path", root)
+    field("branch", branch, SUCCESS)
+    field("remote", remote or "(none)")
     if version_source:
-        print(f"  {color('VERSION SRC', CYAN):<22} {version_source} (local)")
-    print(color("└────────────────────────────────────────────────────────────", DIM))
+        print(f"  {color('# version source:', COMMENT)} {color(version_source, DIM_TEXT)}")
+    print(color(rule, BORDER))
 
+
+# ─────────────────────────────────────────────────────────────────────────────
+# HELPERS
+# ─────────────────────────────────────────────────────────────────────────────
+def _simplify_changes(changes_raw: str) -> str:
+    """Simplify changes string into compact inline format."""
+    if "·" not in changes_raw:
+        return changes_raw
+    parts = [p.strip() for p in changes_raw.split("·")]
+    if parts and "path" in parts[0].lower():
+        parts = parts[1:]
+    return ", ".join(parts) if parts else changes_raw
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# MAIN MENU
+# ─────────────────────────────────────────────────────────────────────────────
 def menu(
     is_git: bool = True,
     has_remote: bool = True,
     snapshot: dict | None = None,
     target_context: dict | None = None,
 ) -> str:
-    """Render the hybrid live-status dashboard and the complete operation list."""
     operations = [
         ("1", "STATUS", "Inspect project health"),
         ("2", "SCAN", "Review files and changes"),
@@ -129,111 +239,223 @@ def menu(
     ]
     snapshot = snapshot or {}
     context = target_context or {}
-    # Keep a single predictable column in both orientations. A bounded content
-    # width prevents landscape terminals from creating oversized lines and
-    # leaves spare horizontal space instead of letting sections drift apart.
     width = max(24, min(shutil_terminal_width(), 88))
-    rule = "─" * max(12, width - 2)
+    rule = _rule(width, "─")
+    narrow = width < 50
 
     while True:
         clear_screen()
         banner(_BANNER_VERSION)
-        def field(label: str, value: object) -> None:
-            prefix = f"│ {label:<13}: "
-            available = max(8, width - len(prefix) - 1)
-            chunks = textwrap.wrap(str(value), width=available, break_long_words=True,
-                                   break_on_hyphens=False) or [""]
-            print(prefix + chunks[0])
+
+        def emit(text: str) -> None:
+            print(text)
+
+        def emit_raw(text: str) -> None:
+            print(text)
+
+        def emit_field(label: str, value: object, value_color: str | None = None) -> None:
+            """Emit a field with proper wrap indentation."""
+            pad = " " * max(1, 14 - len(label))
+            prefix = f"  {color(label, VARIABLE)}{pad} {color(':', OPERATOR)}  "
+            prefix_visible_len = _visible_len(prefix)
+            indent = " " * prefix_visible_len
+
+            value_str = str(value)
+            available = max(8, width - prefix_visible_len - 3)
+            chunks = textwrap.wrap(
+                value_str, width=available,
+                break_long_words=False, break_on_hyphens=False,
+            ) or [""]
+
+            vc = value_color if value_color else STRING
+            print(f"{prefix}{color(f'\"{chunks[0]}\"', vc)}")
             for chunk in chunks[1:]:
-                print("│ " + " " * (len(label) + 2) + "  " + chunk)
+                print(f"{indent}{color(f'\"{chunk}\"', vc)}")
 
-        print(color("┌─ TARGET PROJECT", CYAN))
-        field("Project", context.get("name", "(not provided)"))
-        field("Path", context.get("root", "(not provided)"))
-        field("Branch", context.get("branch", "not inspected"))
-        field("Remote", context.get("remote", "(none)") or "(none)")
+        # ── TARGET PROJECT ───────────────────────────────────────────────
+        emit_raw(color(rule, BORDER))
+        emit(color("  # TARGET PROJECT", COMMENT))
+        emit_field("project", context.get("name", "(not provided)"))
+        emit_field("path", context.get("root", "(not provided)"))
+        emit_field("branch", context.get("branch", "not inspected"), SUCCESS)
+        emit_field("remote", context.get("remote", "(none)") or "(none)")
         if context.get("version"):
-            field("Version", f"{context['version']} ({context.get('version_source', 'local metadata')})")
-        print(color("└" + rule, DIM))
+            emit_field("version", context["version"], SUCCESS)
+        emit_raw(color(rule, BORDER))
 
-        print(color("┌─ HIKARI DASHBOARD · HYBRID MODE / LIVE PROJECT STATUS", CYAN))
-        field("Mode", "Git repository" if is_git else "LOCAL MODE · no Git required")
+        # ── DASHBOARD ────────────────────────────────────────────────────
+        emit(color("  # DASHBOARD", COMMENT))
+        emit_field(
+            "mode",
+            "git" if is_git else "local",
+            VARIABLE if is_git else BOOLEAN,
+        )
+
         if is_git:
-            field("Working tree", snapshot.get("working_tree", "not inspected"))
-            field("Changes", snapshot.get("changes", "not inspected"))
-            field("Sync", snapshot.get("sync", "not checked"))
-            field("Last commit", snapshot.get("last_commit", "not inspected"))
-        else:
-            field("Version", snapshot.get("version", "not detected"))
-            field("Files", snapshot.get("files", "use SCAN for inventory"))
-            field("Safety", "local-only; nothing is uploaded automatically")
-        if snapshot.get("next_step"):
-            field("NEXT", snapshot["next_step"])
-        print(color("└" + rule, DIM))
+            wt = snapshot.get("working_tree", "not inspected")
+            wt_upper = wt.upper()
+            wt_color = STRING
+            if wt_upper == "CLEAN":
+                wt_color = SUCCESS
+            elif wt_upper == "DIRTY":
+                wt_color = WARNING
+            emit_field("working_tree", wt, wt_color)
 
-        print(color("┌─ OPERATIONS / 12 MODULES", CYAN))
+            # changes → dim (biar tidak tabrakan dengan DIRTY)
+            changes_display = _simplify_changes(
+                snapshot.get("changes", "not inspected")
+            )
+            emit_field("changes", changes_display, DIM_TEXT)
+
+            # sync → dim (info, bukan warning)
+            sync = snapshot.get("sync", "not checked")
+            emit_field("sync", sync, DIM_TEXT)
+
+            emit_field("last_commit", snapshot.get("last_commit", "not inspected"))
+        else:
+            emit_field("version", snapshot.get("version", "not detected"), SUCCESS)
+            emit_field("files", snapshot.get("files", "use SCAN for inventory"), OPERATOR)
+            emit_field("safety", "local-only; nothing is uploaded automatically", SUCCESS)
+
+        if snapshot.get("next_step"):
+            emit_field("next", snapshot["next_step"], KEYWORD)
+
+        # ── OPERATIONS ───────────────────────────────────────────────────
+        emit_raw(color(rule, BORDER))
+        emit(color("  # OPERATIONS", COMMENT))
         label_width = max(len(label) for _, label, _ in operations)
+
         for key, label, description in operations:
-            label_cell = f"{key.rjust(2)} {label:<{label_width}}"
-            prefix_plain = f"│ {label_cell}  · "
-            available = max(12, width - len(prefix_plain) - 2)
-            wrapped = textwrap.wrap(description, width=available, break_long_words=False) or [""]
-            print(f"{color('│', CYAN)} {color(key.rjust(2), MAGENTA)} {color(label.ljust(label_width), BOLD + WHITE)}  {color('·', DIM)} {color(wrapped[0], DIM)}")
-            continuation_indent = "│ " + " " * (label_width + 5)
-            for continuation in wrapped[1:]:
-                print(f"{continuation_indent}{color(continuation, DIM)}")
-        print(color("└" + rule, DIM))
-        print("  0  EXIT HIKARI")
-        selected = input(color("\n❯ Choose operation [0–12]: ", CYAN)).strip().upper()
+            if narrow:
+                emit(
+                    f"  {color(SEP, OPERATOR)} {color(key.rjust(2), VARIABLE)}  "
+                    f"{color(label, STRING)}"
+                )
+                if description:
+                    max_desc = max(8, width - 8)
+                    desc = (
+                        description[: max_desc - 3] + "..."
+                        if len(description) > max_desc
+                        else description
+                    )
+                    emit(f"      {color(desc, DIM_TEXT)}")
+                continue
+
+            prefix_plain = f"  {SEP} {key.rjust(2)}  {label.ljust(label_width)}  · "
+            available = max(12, width - len(prefix_plain) - 4)
+            wrapped = textwrap.wrap(
+                description, width=available, break_long_words=False
+            ) or [""]
+            emit(
+                f"  {color(SEP, OPERATOR)} {color(key.rjust(2), VARIABLE)}  "
+                f"{color(label.ljust(label_width), STRING)}  "
+                f"{color('·', OPERATOR)} {color(wrapped[0], DIM_TEXT)}"
+            )
+            if len(wrapped) > 1:
+                indent = " " * (label_width + 8)
+                for cont in wrapped[1:]:
+                    emit(f"{indent}{color(cont, DIM_TEXT)}")
+
+        # ── EXIT ─────────────────────────────────────────────────────────
+        emit_raw("")
+        emit(f"  {color(SEP, OPERATOR)} {color('0', VARIABLE)}  {color('EXIT HIKARI', WARNING)}")
+
+        # ── STATUS BAR ───────────────────────────────────────────────────
+        print(color(rule, BORDER))
+        branch = context.get("branch", "?")
+        changes = snapshot.get("changes", "")
+        sync = snapshot.get("sync", "")
+        status_parts = [
+            color(f" HIKARI v{_BANNER_VERSION.lstrip('v')}", STATUS_BAR),
+            color("│", BORDER),
+            color(f"● {branch}", SUCCESS if is_git else BOOLEAN),
+        ]
+        if is_git and changes:
+            n_changes = changes.split(" ")[0] if changes.split(" ")[0].isdigit() else ""
+            if n_changes and n_changes != "0":
+                status_parts.append(color("│", BORDER))
+                status_parts.append(color(f"⚠ {n_changes} change", DIM_TEXT))
+            else:
+                status_parts.append(color("│", BORDER))
+                status_parts.append(color("✓ clean", DIM_TEXT))
+        if is_git and sync:
+            if "no upstream" in sync.lower():
+                status_parts.append(color("│", BORDER))
+                status_parts.append(color("no upstream", DIM_TEXT))
+        print("".join(status_parts))
+        print(color(rule, BORDER))
+
+        # ── INPUT ────────────────────────────────────────────────────────
+        print()
+        selected = input(f"{color('❯', KEYWORD)} ").strip().upper()
+
         if selected in {"0", "X", "Q"}:
             return "0"
+
         chosen = next((item for item in operations if item[0] == selected), None)
         if not chosen:
             warning("Choose an operation from 1–12, or 0 to exit.")
-            input("  Press ENTER to continue...")
+            input(f"  {color('Press ENTER to continue...', DIM_TEXT)}")
             continue
+
         if selected in {"3", "4", "5", "6", "9", "11"} and not is_git:
-            warning("This operation needs Git. Use 7 REPOSITORY to enable local history; this does not upload files.")
-            input("  Press ENTER to continue...")
+            warning(
+                "This operation needs Git. Use 7 REPOSITORY to enable local history; "
+                "this does not upload files."
+            )
+            input(f"  {color('Press ENTER to continue...', DIM_TEXT)}")
             continue
+
         if selected in {"3", "4"} and is_git and not has_remote:
-            warning("No remote is configured. Use 7 REPOSITORY to connect one; this does not upload files by itself.")
-            input("  Press ENTER to continue...")
+            warning(
+                "No remote is configured. Use 7 REPOSITORY to connect one; "
+                "this does not upload files by itself."
+            )
+            input(f"  {color('Press ENTER to continue...', DIM_TEXT)}")
             continue
+
         return selected
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# STATUS MESSAGES
+# ─────────────────────────────────────────────────────────────────────────────
 def section(title: str) -> None:
-    print(f"\n{accent('◆')} {heading(title.upper())} {accent(IDENTITY)}")
+    print(f"\n{color('#', COMMENT)} {color(title.upper(), COMMENT)} {color(IDENTITY, KEYWORD)}")
 
 
 def success(message: str) -> None:
-    print(f"{color('✓', GREEN)} {message}")
+    print(f"{color('✓', SUCCESS)} {message}")
 
 
 def warning(message: str) -> None:
-    print(f"{color('⚠', YELLOW)} {message}")
+    print(f"{color('⚠', WARNING)} {message}")
 
 
 def error(message: str) -> None:
-    print(f"{color('✗', RED)} {message}")
+    print(f"{color('✗', ERROR)} {message}")
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# SPINNER
+# ─────────────────────────────────────────────────────────────────────────────
 @contextmanager
 def spinner(message: str):
     frames = ("⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏")
     stop = threading.Event()
+    running = False
 
     def animate() -> None:
+        nonlocal running
         if not sys.stdout.isatty() or os.environ.get("NO_COLOR"):
             return
+        running = True
         i = 0
         while not stop.is_set():
-            print(f"\r{color(frames[i % len(frames)], MAGENTA)} {message}", end="", flush=True)
+            print(f"\r{color(frames[i % len(frames)], KEYWORD)} {message}", end="", flush=True)
             i += 1
             stop.wait(0.08)
-        width = len(re.sub(r"\x1b\[[0-9;]*m", "", message)) + 4
-        print("\r" + " " * width + "\r", end="", flush=True)
+        running = False
 
     thread = threading.Thread(target=animate, daemon=True)
     thread.start()
@@ -242,12 +464,31 @@ def spinner(message: str):
     finally:
         stop.set()
         thread.join(timeout=0.2)
-        if not sys.stdout.isatty() or os.environ.get("NO_COLOR"):
+        if not running and (not sys.stdout.isatty() or os.environ.get("NO_COLOR")):
             return
-        width = len(re.sub(r"\x1b\[[0-9;]*m", "", message)) + 4
-        print("\r" + " " * width + "\r", end="", flush=True)
+        w = _visible_len(message) + 4
+        print("\r" + " " * w + "\r", end="", flush=True)
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# FOOTER
+# ─────────────────────────────────────────────────────────────────────────────
 def footer() -> None:
-    print(color("\n  ───────────────────────────────────────────────────────────", DIM))
-    print(color("  HIKARI/.LAB", MAGENTA) + color(" • deterministic git • GitHub via gh • credentials stay external", DIM) + " " + accent(IDENTITY))
+    width = max(24, min(shutil_terminal_width(), 88))
+    rule = _rule(width, "─")
+    print()
+    print(color(rule, BORDER))
+    if width < 60:
+        print(color("  HIKARI", KEYWORD) + color("  " + SEP + "  ", BORDER) + color("deterministic git", STRING))
+        print(color("  GitHub via gh  " + SEP + "  credentials stay external ", DIM_TEXT) + color(IDENTITY, KEYWORD))
+    else:
+        print(
+            color("  HIKARI", KEYWORD)
+            + color("  " + SEP + "  ", BORDER)
+            + color("deterministic git", STRING)
+            + color("  " + SEP + "  ", BORDER)
+            + color("GitHub via gh", STRING)
+            + color("  " + SEP + "  ", BORDER)
+            + color("credentials stay external ", DIM_TEXT)
+            + color(IDENTITY, KEYWORD)
+        )
