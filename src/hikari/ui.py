@@ -10,11 +10,11 @@ from contextlib import contextmanager
 from ._version import get_version
 
 # ─────────────────────────────────────────────────────────────────────────────
-# COLOR PALETTE — Tokyo Night Edition 🌊
+# COLOR PALETTE — Solana-Inspired (Final Tweak)
+# Ocean Blue (primary) × Surge Green (labels) × Purple (HIKARI brand only)
 # ─────────────────────────────────────────────────────────────────────────────
 RESET = "\033[0m"
 BOLD = "\033[1m"
-ITALIC = "\033[3m"
 DIM = "\033[2m"
 
 _SUPPORTS_256 = (
@@ -26,49 +26,70 @@ _SUPPORTS_256 = (
 def _c(code256: str, fallback: str) -> str:
     return code256 if _SUPPORTS_256 else fallback
 
-# ── Tokyo Night palette ──
-COMMENT     = _c("\033[38;5;103m",  "\033[94m")     # slate blue — # section
-VARIABLE    = _c("\033[38;5;111m",  "\033[96m")     # electric blue — labels
-STRING      = _c("\033[38;5;151m",  "\033[92m")     # mint green — string values
-KEYWORD     = _c("\033[38;5;176m",  "\033[95m")     # lavender — accent
-BOOLEAN     = _c("\033[38;5;222m",  "\033[93m")     # amber
-SUCCESS     = _c("\033[38;5;151m",  "\033[92m")     # mint
-WARNING     = _c("\033[38;5;222m",  "\033[93m")     # amber
-ERROR       = _c("\033[38;5;204m",  "\033[91m")     # rose red
+# ── Primary accent: Ocean Blue ──
+OCEAN_BLUE  = _c("\033[38;5;45m",   "\033[96m")     # #03E1FF
+OCEAN_BOLD  = _c("\033[1;38;5;45m", "\033[1;96m")
+
+# ── Secondary accent: Surge Green (labels) ──
+SURGE_GREEN = _c("\033[38;5;49m",   "\033[92m")     # #00FFA3
+SURGE_BOLD  = _c("\033[1;38;5;49m", "\033[1;92m")
+
+# ── Brand signature: Purple (HIKARI only) ──
+PURPLE_DINO = _c("\033[38;5;165m",  "\033[95m")     # #DC1FFF
+PURPLE_BOLD = _c("\033[1;38;5;165m","\033[1;95m")
+
+# ── Neutral gray scale ──
+GRAY_BORDER = _c("\033[38;5;238m",  "\033[90m")     # #444    — border/separator
+GRAY_LABEL  = _c("\033[38;5;242m",  "\033[37m")     # #6c6c6c — unused
+GRAY_VALUE  = _c("\033[38;5;245m",  "\033[37m")     # #8a8a8a — value/metadata
+
+# ── Semantic mapping ──
+COMMENT     = OCEAN_BLUE            # section title `#`
+VARIABLE    = SURGE_GREEN           # label → GREEN
+STRING      = GRAY_VALUE            # value → light gray
+KEYWORD     = OCEAN_BLUE            # next / prompt → BLUE
+BOOLEAN     = GRAY_VALUE
+SUCCESS     = OCEAN_BLUE            # success → BLUE (Solana style)
+WARNING     = OCEAN_BLUE            # warning → BLUE
+ERROR       = OCEAN_BLUE            # error → BLUE
 
 # ── Structure ──
-BORDER      = _c("\033[38;5;60m",   "\033[90m")     # deep indigo — borders
-OPERATOR    = _c("\033[38;5;245m",  "\033[37m")     # mid gray — operators
-DIM_TEXT    = _c("\033[38;5;240m",  "\033[90m")     # slate gray — dim text
-STATUS_BAR  = _c("\033[38;5;60m",   "\033[90m")     # deep indigo — status bar
+BORDER      = GRAY_BORDER
+OPERATOR    = GRAY_BORDER
+DIM_TEXT    = GRAY_VALUE
+STATUS_BAR  = GRAY_BORDER
 
-# ── Legacy aliases (for backwards compat with banner) ──
+# ── Brand (HIKARI only) ──
+HIKARI      = PURPLE_BOLD
+HIKARI_SOFT = PURPLE_DINO
+
+# ── Legacy aliases ──
 LINENO = BORDER
-CYAN = VARIABLE
-MAGENTA = COMMENT
-DEEP_TEAL = BORDER
+CYAN = OCEAN_BLUE
+MAGENTA = PURPLE_DINO
+DEEP_TEAL = GRAY_BORDER
 SAKURA = KEYWORD
-SAKURA_BOLD = KEYWORD
-NEON_CYAN = VARIABLE
-NEON_MAGENTA = KEYWORD
-NEON_YELLOW = WARNING
-NEON_GREEN = SUCCESS
-NEON_RED = ERROR
-NEON_BLUE = KEYWORD
-GRAY_LIGHT = STRING
-GRAY_MID = OPERATOR
-GRAY_DARK = DIM_TEXT
-PURPLE_DARK = DIM_TEXT
-BLUE = VARIABLE
-GREEN = SUCCESS
-YELLOW = WARNING
-RED = ERROR
-WHITE = STRING
-WHITE_BOLD = STRING
-ICE_BLUE = VARIABLE
-ARCTIC_DARK = DIM_TEXT
-CYAN_SOFT = VARIABLE
-CYAN_BOLD = VARIABLE
+SAKURA_BOLD = PURPLE_BOLD
+NEON_CYAN = OCEAN_BLUE
+NEON_MAGENTA = PURPLE_DINO
+NEON_YELLOW = OCEAN_BLUE
+NEON_GREEN = OCEAN_BLUE
+NEON_RED = OCEAN_BLUE
+NEON_BLUE = OCEAN_BLUE
+GRAY_LIGHT = GRAY_VALUE
+GRAY_MID = GRAY_LABEL
+GRAY_DARK = GRAY_BORDER
+PURPLE_DARK = GRAY_BORDER
+BLUE = OCEAN_BLUE
+GREEN = SURGE_GREEN
+YELLOW = OCEAN_BLUE
+RED = OCEAN_BLUE
+WHITE = GRAY_VALUE
+WHITE_BOLD = GRAY_VALUE
+ICE_BLUE = OCEAN_BLUE
+ARCTIC_DARK = GRAY_BORDER
+CYAN_SOFT = OCEAN_BLUE
+CYAN_BOLD = OCEAN_BOLD
 
 IDENTITY = "◈"
 SEP = "▸"
@@ -126,10 +147,9 @@ def _rule(width: int, char: str = "─") -> str:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# BANNER — Tokyo Night with accent
+# BANNER
 # ─────────────────────────────────────────────────────────────────────────────
 def banner(version: str) -> None:
-    """Render the console identity/header and remember it for screen redraws."""
     global _BANNER_VERSION
     _BANNER_VERSION = version
     print()
@@ -138,66 +158,61 @@ def banner(version: str) -> None:
     subtitle = f"v{version.lstrip('v')}  •  光  •  OFFLINE-FIRST  •  LOCAL + OPTIONAL GIT"
 
     if width < 68:
-        # Compact mode with Tokyo Night accent
         print(
-            color("HIKARI", BOLD + VARIABLE)
-            + color(" /.LAB", COMMENT)
-            + color(" // ", DIM_TEXT)
-            + color("LOCAL WORKSPACE", BOLD + STRING)
+            color("HIKARI", HIKARI)                 # 💜 brand
+            + color(" /.LAB", OCEAN_BLUE)
+            + color(" // ", GRAY_BORDER)
+            + color("LOCAL WORKSPACE", OCEAN_BOLD)
         )
-        print(color(subtitle, DIM_TEXT))
+        print(color(subtitle, GRAY_VALUE))
     else:
         inner = min(width - 2, 76)
         title = title[:inner - 2]
         subtitle = subtitle[:inner - 2]
-        print(color("╔" + "═" * inner + "╗", BORDER))
+        print(color("╔" + "═" * inner + "╗", GRAY_BORDER))
         print(
-            color("║", BORDER)
-            + color("  " + title, BOLD + VARIABLE)
-            + " " * max(0, inner - len(title) - 2)
-            + color("║", BORDER)
+            color("║", GRAY_BORDER)
+            + color("  H I K A R I", PURPLE_BOLD)   # 💜 brand
+            + color("  / . L A B", OCEAN_BLUE)
+            + color("  //  ", GRAY_BORDER)
+            + color("LOCAL WORKSPACE", OCEAN_BOLD)
+            + " " * max(0, inner - 42)
+            + color("║", GRAY_BORDER)
         )
         print(
-            color("║", COMMENT)
-            + color("  " + subtitle, DIM_TEXT)
+            color("║", OCEAN_BLUE)
+            + color("  " + subtitle, GRAY_VALUE)
             + " " * max(0, inner - len(subtitle) - 2)
-            + color("║", BORDER)
+            + color("║", GRAY_BORDER)
         )
-        print(color("╚" + "═" * inner + "╝", BORDER))
+        print(color("╚" + "═" * inner + "╝", GRAY_BORDER))
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # TARGET PROJECT PANEL
 # ─────────────────────────────────────────────────────────────────────────────
-def target(
-    repo_name: str,
-    root: str,
-    branch: str,
-    remote: str,
-    version: str | None = None,
-    version_source: str | None = None,
-) -> None:
+def target(repo_name, root, branch, remote, version=None, version_source=None):
     width = max(24, min(shutil_terminal_width(), 88))
     rule = _rule(width, "─")
 
     print(color(rule, BORDER))
-    print(color("  # TARGET PROJECT", COMMENT))
+    print(color("  # ", OCEAN_BLUE) + color("TARGET PROJECT", OCEAN_BOLD))
     print(color(rule, BORDER))
 
-    def field(label: str, value: str, value_color: str = STRING) -> None:
+    def field(label, value, value_color=STRING):
         pad = " " * max(1, 14 - len(label))
         print(
             f"  {color(label, VARIABLE)}{pad} "
             f"{color(':', OPERATOR)}  "
-            f"{color(f'\"{value}\"', value_color)}"
+            f"{color(value, value_color)}"
         )
 
     field("project", repo_name + (f" v{version}" if version else ""))
     field("path", root)
-    field("branch", branch, SUCCESS)
+    field("branch", branch, OCEAN_BLUE)
     field("remote", remote or "(none)")
     if version_source:
-        print(f"  {color('# version source:', COMMENT)} {color(version_source, DIM_TEXT)}")
+        print(f"  {color('# version source:', OCEAN_BLUE)} {color(version_source, DIM_TEXT)}")
     print(color(rule, BORDER))
 
 
@@ -205,7 +220,6 @@ def target(
 # HELPERS
 # ─────────────────────────────────────────────────────────────────────────────
 def _simplify_changes(changes_raw: str) -> str:
-    """Simplify changes string into compact inline format."""
     if "·" not in changes_raw:
         return changes_raw
     parts = [p.strip() for p in changes_raw.split("·")]
@@ -214,15 +228,20 @@ def _simplify_changes(changes_raw: str) -> str:
     return ", ".join(parts) if parts else changes_raw
 
 
+def _changes_color(changes_str: str) -> str:
+    """Clean → gray; dirty → blue."""
+    if not changes_str or changes_str.lower() in {"not inspected", "clean"}:
+        return GRAY_VALUE
+    numbers = [int(n) for n in re.findall(r"\b(\d+)\b", changes_str)]
+    if not numbers or all(n == 0 for n in numbers):
+        return GRAY_VALUE
+    return OCEAN_BLUE
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # MAIN MENU
 # ─────────────────────────────────────────────────────────────────────────────
-def menu(
-    is_git: bool = True,
-    has_remote: bool = True,
-    snapshot: dict | None = None,
-    target_context: dict | None = None,
-) -> str:
+def menu(is_git=True, has_remote=True, snapshot=None, target_context=None):
     operations = [
         ("1", "STATUS", "Inspect project health"),
         ("2", "SCAN", "Review files and changes"),
@@ -247,147 +266,133 @@ def menu(
         clear_screen()
         banner(_BANNER_VERSION)
 
-        def emit(text: str) -> None:
-            print(text)
+        def emit(text): print(text)
+        def emit_raw(text): print(text)
 
-        def emit_raw(text: str) -> None:
-            print(text)
+        def emit_section(title):
+            """Section heading: # in blue, title in blue bold."""
+            print(f"  {color('#', OCEAN_BLUE)} {color(title, OCEAN_BOLD)}")
 
-        def emit_field(label: str, value: object, value_color: str | None = None) -> None:
-            """Emit a field with proper wrap indentation."""
+        def emit_field(label, value, value_color=None):
             pad = " " * max(1, 14 - len(label))
             prefix = f"  {color(label, VARIABLE)}{pad} {color(':', OPERATOR)}  "
             prefix_visible_len = _visible_len(prefix)
             indent = " " * prefix_visible_len
 
             value_str = str(value)
-            available = max(8, width - prefix_visible_len - 3)
-            chunks = textwrap.wrap(
-                value_str, width=available,
-                break_long_words=False, break_on_hyphens=False,
-            ) or [""]
+            available = max(8, width - prefix_visible_len - 2)
+            chunks = textwrap.wrap(value_str, width=available,
+                                   break_long_words=False, break_on_hyphens=False) or [""]
 
             vc = value_color if value_color else STRING
-            print(f"{prefix}{color(f'\"{chunks[0]}\"', vc)}")
+            print(f"{prefix}{color(chunks[0], vc)}")
             for chunk in chunks[1:]:
-                print(f"{indent}{color(f'\"{chunk}\"', vc)}")
+                print(f"{indent}{color(chunk, vc)}")
 
-        # ── TARGET PROJECT ───────────────────────────────────────────────
+        # ── TARGET PROJECT ──
         emit_raw(color(rule, BORDER))
-        emit(color("  # TARGET PROJECT", COMMENT))
+        emit_section("TARGET PROJECT")
         emit_field("project", context.get("name", "(not provided)"))
         emit_field("path", context.get("root", "(not provided)"))
-        emit_field("branch", context.get("branch", "not inspected"), SUCCESS)
+        emit_field("branch", context.get("branch", "not inspected"), OCEAN_BLUE)
         emit_field("remote", context.get("remote", "(none)") or "(none)")
         if context.get("version"):
-            emit_field("version", context["version"], SUCCESS)
+            emit_field("version", context["version"])
         emit_raw(color(rule, BORDER))
 
-        # ── DASHBOARD ────────────────────────────────────────────────────
-        emit(color("  # DASHBOARD", COMMENT))
-        emit_field(
-            "mode",
-            "git" if is_git else "local",
-            VARIABLE if is_git else BOOLEAN,
-        )
+        # ── DASHBOARD ──
+        emit_section("DASHBOARD")
+        # mode → Ocean Blue if git, gray if local
+        emit_field("mode", "git" if is_git else "local",
+                   OCEAN_BLUE if is_git else GRAY_VALUE)
 
         if is_git:
             wt = snapshot.get("working_tree", "not inspected")
             wt_upper = wt.upper()
-            wt_color = STRING
-            if wt_upper == "CLEAN":
-                wt_color = SUCCESS
-            elif wt_upper == "DIRTY":
-                wt_color = WARNING
+            wt_color = GRAY_VALUE
+            if wt_upper == "DIRTY":
+                wt_color = OCEAN_BLUE
             emit_field("working_tree", wt, wt_color)
 
-            # changes → dim
-            changes_display = _simplify_changes(
-                snapshot.get("changes", "not inspected")
-            )
-            emit_field("changes", changes_display, DIM_TEXT)
+            changes_display = _simplify_changes(snapshot.get("changes", "not inspected"))
+            emit_field("changes", changes_display, _changes_color(changes_display))
 
-            # sync → dim
             sync = snapshot.get("sync", "not checked")
-            emit_field("sync", sync, DIM_TEXT)
+            emit_field("sync", sync, GRAY_VALUE)
 
             emit_field("last_commit", snapshot.get("last_commit", "not inspected"))
         else:
-            emit_field("version", snapshot.get("version", "not detected"), SUCCESS)
-            emit_field("files", snapshot.get("files", "use SCAN for inventory"), OPERATOR)
-            emit_field("safety", "local-only; nothing is uploaded automatically", SUCCESS)
+            emit_field("version", snapshot.get("version", "not detected"))
+            emit_field("files", snapshot.get("files", "use SCAN for inventory"))
+            emit_field("safety", "local-only; nothing is uploaded automatically")
 
         if snapshot.get("next_step"):
-            emit_field("next", snapshot["next_step"], KEYWORD)
+            emit_field("next", snapshot["next_step"], OCEAN_BOLD)
 
-        # ── OPERATIONS ───────────────────────────────────────────────────
+        # ── OPERATIONS ──
         emit_raw(color(rule, BORDER))
-        emit(color("  # OPERATIONS", COMMENT))
+        emit_section("OPERATIONS")
         label_width = max(len(label) for _, label, _ in operations)
 
         for key, label, description in operations:
             if narrow:
-                emit(
-                    f"  {color(SEP, OPERATOR)} {color(key.rjust(2), VARIABLE)}  "
-                    f"{color(label, STRING)}"
-                )
+                emit(f"  {color(SEP, GRAY_BORDER)} {color(key.rjust(2), OCEAN_BLUE)}  {color(label, GRAY_VALUE)}")
                 if description:
                     max_desc = max(8, width - 8)
-                    desc = (
-                        description[: max_desc - 3] + "..."
-                        if len(description) > max_desc
-                        else description
-                    )
-                    emit(f"      {color(desc, DIM_TEXT)}")
+                    desc = description[:max_desc - 3] + "..." if len(description) > max_desc else description
+                    emit(f"      {color(desc, GRAY_VALUE)}")
                 continue
 
             prefix_plain = f"  {SEP} {key.rjust(2)}  {label.ljust(label_width)}  · "
             available = max(12, width - len(prefix_plain) - 4)
-            wrapped = textwrap.wrap(
-                description, width=available, break_long_words=False
-            ) or [""]
+            wrapped = textwrap.wrap(description, width=available, break_long_words=False) or [""]
             emit(
-                f"  {color(SEP, OPERATOR)} {color(key.rjust(2), VARIABLE)}  "
-                f"{color(label.ljust(label_width), STRING)}  "
-                f"{color('·', OPERATOR)} {color(wrapped[0], DIM_TEXT)}"
+                f"  {color(SEP, GRAY_BORDER)} {color(key.rjust(2), OCEAN_BLUE)}  "
+                f"{color(label.ljust(label_width), GRAY_VALUE)}  "
+                f"{color('·', GRAY_BORDER)} {color(wrapped[0], GRAY_VALUE)}"
             )
             if len(wrapped) > 1:
                 indent = " " * (label_width + 8)
                 for cont in wrapped[1:]:
-                    emit(f"{indent}{color(cont, DIM_TEXT)}")
+                    emit(f"{indent}{color(cont, GRAY_VALUE)}")
 
-        # ── EXIT ─────────────────────────────────────────────────────────
+        # ── EXIT ──
+        # HIKARI purple — satu-satunya purple di UI
         emit_raw("")
-        emit(f"  {color(SEP, OPERATOR)} {color('0', VARIABLE)}  {color('EXIT HIKARI', ERROR)}")
+        emit(
+            f"  {color(SEP, GRAY_BORDER)} {color('0', OCEAN_BLUE)}  "
+            f"{color('EXIT', GRAY_VALUE)} {color('HIKARI', HIKARI)}"
+        )
 
-        # ── STATUS BAR ───────────────────────────────────────────────────
+        # ── STATUS BAR ──
         print(color(rule, BORDER))
         branch = context.get("branch", "?")
         changes = snapshot.get("changes", "")
         sync = snapshot.get("sync", "")
         status_parts = [
-            color(f" HIKARI v{_BANNER_VERSION.lstrip('v')}", STATUS_BAR),
-            color("│", BORDER),
-            color(f"● {branch}", SUCCESS if is_git else BOOLEAN),
+            color(" HIKARI", HIKARI)  # 💜 brand
+            + color(f" v{_BANNER_VERSION.lstrip('v')}", GRAY_VALUE),
+            color("│", GRAY_BORDER),
+            color(f"● {branch}", OCEAN_BLUE),
         ]
         if is_git and changes:
             n_changes = changes.split(" ")[0] if changes.split(" ")[0].isdigit() else ""
             if n_changes and n_changes != "0":
-                status_parts.append(color("│", BORDER))
-                status_parts.append(color(f"⚠ {n_changes} change", DIM_TEXT))
+                status_parts.append(color("│", GRAY_BORDER))
+                status_parts.append(color(f"⚠ {n_changes} change", OCEAN_BLUE))
             else:
-                status_parts.append(color("│", BORDER))
-                status_parts.append(color("✓ clean", DIM_TEXT))
+                status_parts.append(color("│", GRAY_BORDER))
+                status_parts.append(color("✓ clean", GRAY_VALUE))
         if is_git and sync:
             if "no upstream" in sync.lower():
-                status_parts.append(color("│", BORDER))
-                status_parts.append(color("no upstream", DIM_TEXT))
+                status_parts.append(color("│", GRAY_BORDER))
+                status_parts.append(color("no upstream", GRAY_VALUE))
         print("".join(status_parts))
         print(color(rule, BORDER))
 
-        # ── INPUT ────────────────────────────────────────────────────────
+        # ── INPUT ──
         print()
-        selected = input(f"{color('❯', KEYWORD)} ").strip().upper()
+        selected = input(f"{color('❯', OCEAN_BOLD)} ").strip().upper()
 
         if selected in {"0", "X", "Q"}:
             return "0"
@@ -395,23 +400,17 @@ def menu(
         chosen = next((item for item in operations if item[0] == selected), None)
         if not chosen:
             warning("Choose an operation from 1–12, or 0 to exit.")
-            input(f"  {color('Press ENTER to continue...', DIM_TEXT)}")
+            input(f"  {color('Press ENTER to continue...', GRAY_VALUE)}")
             continue
 
         if selected in {"3", "4", "5", "6", "9", "11"} and not is_git:
-            warning(
-                "This operation needs Git. Use 7 REPOSITORY to enable local history; "
-                "this does not upload files."
-            )
-            input(f"  {color('Press ENTER to continue...', DIM_TEXT)}")
+            warning("This operation needs Git. Use 7 REPOSITORY to enable local history; this does not upload files.")
+            input(f"  {color('Press ENTER to continue...', GRAY_VALUE)}")
             continue
 
         if selected in {"3", "4"} and is_git and not has_remote:
-            warning(
-                "No remote is configured. Use 7 REPOSITORY to connect one; "
-                "this does not upload files by itself."
-            )
-            input(f"  {color('Press ENTER to continue...', DIM_TEXT)}")
+            warning("No remote is configured. Use 7 REPOSITORY to connect one; this does not upload files by itself.")
+            input(f"  {color('Press ENTER to continue...', GRAY_VALUE)}")
             continue
 
         return selected
@@ -420,39 +419,39 @@ def menu(
 # ─────────────────────────────────────────────────────────────────────────────
 # STATUS MESSAGES
 # ─────────────────────────────────────────────────────────────────────────────
-def section(title: str) -> None:
-    print(f"\n{color('#', COMMENT)} {color(title.upper(), COMMENT)} {color(IDENTITY, KEYWORD)}")
+def section(title):
+    print(f"\n{color('#', OCEAN_BLUE)} {color(title.upper(), OCEAN_BOLD)} {color(IDENTITY, OCEAN_BLUE)}")
 
 
-def success(message: str) -> None:
-    print(f"{color('✓', SUCCESS)} {message}")
+def success(message):
+    print(f"{color('✓', OCEAN_BLUE)} {message}")
 
 
-def warning(message: str) -> None:
-    print(f"{color('⚠', WARNING)} {message}")
+def warning(message):
+    print(f"{color('⚠', OCEAN_BLUE)} {message}")
 
 
-def error(message: str) -> None:
-    print(f"{color('✗', ERROR)} {message}")
+def error(message):
+    print(f"{color('✗', OCEAN_BLUE)} {message}")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SPINNER
 # ─────────────────────────────────────────────────────────────────────────────
 @contextmanager
-def spinner(message: str):
+def spinner(message):
     frames = ("⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏")
     stop = threading.Event()
     running = False
 
-    def animate() -> None:
+    def animate():
         nonlocal running
         if not sys.stdout.isatty() or os.environ.get("NO_COLOR"):
             return
         running = True
         i = 0
         while not stop.is_set():
-            print(f"\r{color(frames[i % len(frames)], KEYWORD)} {message}", end="", flush=True)
+            print(f"\r{color(frames[i % len(frames)], OCEAN_BLUE)} {message}", end="", flush=True)
             i += 1
             stop.wait(0.08)
         running = False
@@ -473,22 +472,29 @@ def spinner(message: str):
 # ─────────────────────────────────────────────────────────────────────────────
 # FOOTER
 # ─────────────────────────────────────────────────────────────────────────────
-def footer() -> None:
+def footer():
     width = max(24, min(shutil_terminal_width(), 88))
     rule = _rule(width, "─")
     print()
     print(color(rule, BORDER))
     if width < 60:
-        print(color("  HIKARI", KEYWORD) + color("  " + SEP + "  ", BORDER) + color("deterministic git", STRING))
-        print(color("  GitHub via gh  " + SEP + "  credentials stay external ", DIM_TEXT) + color(IDENTITY, KEYWORD))
+        print(
+            color("  HIKARI", HIKARI)  # 💜
+            + color("  " + SEP + "  ", GRAY_BORDER)
+            + color("deterministic git", GRAY_VALUE)
+        )
+        print(
+            color("  GitHub via gh  " + SEP + "  credentials stay external ", GRAY_VALUE)
+            + color(IDENTITY, OCEAN_BLUE)
+        )
     else:
         print(
-            color("  HIKARI", KEYWORD)
-            + color("  " + SEP + "  ", BORDER)
-            + color("deterministic git", STRING)
-            + color("  " + SEP + "  ", BORDER)
-            + color("GitHub via gh", STRING)
-            + color("  " + SEP + "  ", BORDER)
-            + color("credentials stay external ", DIM_TEXT)
-            + color(IDENTITY, KEYWORD)
+            color("  HIKARI", HIKARI)  # 💜
+            + color("  " + SEP + "  ", GRAY_BORDER)
+            + color("deterministic git", GRAY_VALUE)
+            + color("  " + SEP + "  ", GRAY_BORDER)
+            + color("GitHub via gh", GRAY_VALUE)
+            + color("  " + SEP + "  ", GRAY_BORDER)
+            + color("credentials stay external ", GRAY_VALUE)
+            + color(IDENTITY, OCEAN_BLUE)
         )
