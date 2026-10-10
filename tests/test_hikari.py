@@ -73,7 +73,7 @@ class RebrandAndReleaseTests(unittest.TestCase):
 
     def test_terminal_identity_marker(self):
         from hikari.ui import IDENTITY, terminal_text
-        self.assertEqual(IDENTITY, "✦")
+        self.assertEqual(IDENTITY, "◈")
         self.assertEqual(terminal_text("hello"), "hello")
         self.assertEqual(terminal_text(""), "")
 

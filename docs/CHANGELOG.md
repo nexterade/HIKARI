@@ -1,3 +1,10 @@
+## Unreleased — Solana-inspired terminal theme
+
+- Added `hikari.theme` as the shared terminal palette and ANSI utility module based on the supplied `theme.py`.
+- Routed the existing CLI color aliases through Ocean Blue, Surge Green, Purple Dino, and grayscale tokens for consistent styling across dashboard, menus, prompts, status messages, and utilities.
+- Updated the terminal identity glyph to `◈` and aligned its regression tests with the supplied theme.
+- Preserved existing workflows and module behavior.
+
 ## 0.6.8 — Editable Release Notes Drafts
 
 - Add an interactive release-notes preview flow with options to edit multiline Markdown, load a saved draft, save the current draft, use the current notes, or cancel.
